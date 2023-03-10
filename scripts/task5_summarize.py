@@ -1,11 +1,15 @@
 import csv
-import re
+import requests
+from bs4 import BeautifulSoup
 
 # entity, more entities ... 
 entityMap_adjList = {}
 
 # entity, [first_hop_entities], [second_hop_entities]
 entityMap_twoHops = {}
+
+# enity, link
+entities = {}
 
 def makeEntityAdjList():
     entityMap_adjList.clear()
@@ -36,11 +40,53 @@ def makeTwoHops():
         second_hop = list(set(second_hop))
         entityMap_twoHops[key] = [first_hop, second_hop]
 
+def makeEntityLinks():
+    with open('./csv_files/wikiEntities.csv') as f:
+        csv_file = csv.reader(f)
+        
+        # skips header
+        next(csv_file)         
 
-# Defining main function
-def main():
+        for name, link in csv_file:
+            entities[name] = link
+
+def getSummary(entity):
+    link = entities[entity]
+    simpleLink = "https://simple" + link[10:]
+
+    res = requests.get(url=simpleLink) 
+    if res.status_code != 200:
+        res = requests.get(url=link)
+    
+    soup = BeautifulSoup(res.content, 'html.parser')
+    unordered_list = soup.find("div", {"class": "mw-parser-output"})
+
+    children = unordered_list.findChildren()
+    cnt = 0
+    seenH2 = False
+    text = ""
+
+    for child in children:
+        if "<h2" == (str(child))[0:3]:
+            break
+
+        if "<p>" == (str(child))[0:3]:
+            cnt += 1
+            if seenH2 == False and cnt > 5:
+                break
+            text += child.getText()
+            
+    return text
+
+if __name__ == '__main__':
     makeEntityAdjList()
     makeTwoHops()
-      
-if __name__=="__main__":
-    main()
+    makeEntityLinks()
+    i = 0
+    for entry in entities:
+        print(entry)
+        print(getSummary(entry))
+    
+        i +=1
+        if i > 3:
+            break

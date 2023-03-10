@@ -46,6 +46,12 @@ def writeToCSV():
     for key in entityMap_twoHops:
         writer.writerow([key, entityMap_twoHops[key][0], entityMap_twoHops[key][1]])
 
+if __name__=="__main__":
+    makeEntityAdjList()
+    makeTwoHops()
+    # writeToCSV()
+
+
 # def extractFromCSV(entity):
 #           DOES NOT WORK
 #     with open('entity_with_twoHops.csv') as f:
@@ -61,12 +67,3 @@ def writeToCSV():
 
 #             hop1 = re.split(",| |'", hop1)
 #             hop2 = re.split(",| |'", hop2)
-
-# Defining main function
-def main():
-    makeEntityAdjList()
-    makeTwoHops()
-    # writeToCSV()            
-      
-if __name__=="__main__":
-    main()
