@@ -1,0 +1,27 @@
+import requests
+from bs4 import BeautifulSoup
+
+# URL of the Wikipedia page
+url = 'https://en.wikipedia.org/wiki/Tree_(data_structure)'
+
+# Send a request to the URL and get the page content
+response = requests.get(url)
+content = response.content
+
+# Use BeautifulSoup to parse the HTML content
+soup = BeautifulSoup(content, 'html.parser')
+
+# Find the div with class mw-content-container
+content_div = soup.find('div', {'class': 'mw-content-container'})
+
+# Extract the text inside the content div
+text = ''
+for element in content_div.descendants:
+    if element.name == 'img':
+        text += "$IMG$"
+    else:
+        if hasattr(element, 'get_text'):
+            text += element.get_text()
+
+# Print the final text
+print(text)
