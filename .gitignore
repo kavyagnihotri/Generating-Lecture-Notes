@@ -3,3 +3,5 @@ venv
 parsed_wiki_pages
 .DS_Store
 csv_files
+pages
+*.json

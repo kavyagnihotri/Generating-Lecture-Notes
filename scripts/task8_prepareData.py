@@ -23,21 +23,41 @@ def getEntityNames():
             entity_set.add(entity_name)
     return
 
-def readTextJson(dataset_folder, valid_entity_set):
-    #  delimiter = ": '", in text files
-    values = {}
-    for filename in os.listdir(dataset_folder):
-        if filename.endswith(".txt"):
-            break
+def validJson(filename):
+    print("here")
+    valid_entity_set = getEntityNames()
+
+    with open(filename, 'r', encoding="utf-8") as json_file:
+        data = json.loads(json_file.read())    
+        
+        for entity_name in data:
+            if entity_name not in valid_entity_set:
+                print("Invalid entity: " + entity_name)
+                return False
+
+def read_files_and_process(filename):
+    processed_lines = []
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+        # processed_lines = []
+        for line in lines:
+            if "$IMG$" in line:
+                word = line.strip().replace("$IMG$", "")
+                processed_lines.append(f"{word} IMG IMG IMG\n")
+            else:
+                words = line.strip().split()
+                for word in words:
+                    processed_lines.append(f"{word} O O O\n")
+        # result.append("".join(processed_lines))
+        print(f"{processed_lines}")
+    return processed_lines
 
 
-    
-    
-
-    
 
 if __name__ == "__main__":
-    dataset_folder = "./csv_files/bert_dataset_img/short/"
-    # removeNewLines(dataset_folder)
-    # modified_dataset_folder = os.path.join(dataset_folder, "modified")
-    valid_entity_set = getEntityNames()
+    dataset_folder = "./pages"
+
+    for filename in os.listdir(dataset_folder):
+        if filename.endswith(".txt"):
+            read_files_and_process(filename)
+            # readJson(os.path.join(dataset_folder, filename))
