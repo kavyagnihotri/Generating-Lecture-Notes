@@ -35,23 +35,34 @@ def validJson(filename):
                 print("Invalid entity: " + entity_name)
                 return False
 
-def read_files_and_process(filename):
-    processed_lines = []
-    with open(filename, 'r') as file:
-        lines = file.readlines()
-        # processed_lines = []
-        for line in lines:
-            if "$IMG$" in line:
-                word = line.strip().replace("$IMG$", "")
-                processed_lines.append(f"{word} IMG IMG IMG\n")
-            else:
-                words = line.strip().split()
-                for word in words:
-                    processed_lines.append(f"{word} O O O\n")
-        # result.append("".join(processed_lines))
-        print(f"{processed_lines}")
-    return processed_lines
+def read_files_and_process(filepath):
+    result = []
+    with open(filepath, 'r') as file:
+        text = file.read().replace('\n', ' ')
 
+        processed_lines = []
+        processed_lines.append("-DOCSTART-\n")
+        for sentence in text.split('.'):
+            words = sentence.strip().split()
+            for i, word in enumerate(words):
+                if i < len(words) - 1 and words[i+1] == "$IMG$":
+                    # If the next word is an image, skip the following O O O and add IMG IMG IMG
+                    processed_lines.append(f"{word} IMG IMG IMG")
+                elif word == "$IMG$":
+                    continue
+                else:
+                    processed_lines.append(f"{word} O O O")
+                processed_lines.append("\n")
+            if not words or words[-1] in [".", "!", "?"]:
+                # Add two newlines after a sentence
+                processed_lines.append("\n\n")
+            else:
+                processed_lines.append("\n")
+        result.append("".join(processed_lines))
+
+    for res in result:
+        print(res)
+    return result
 
 
 if __name__ == "__main__":
@@ -59,5 +70,5 @@ if __name__ == "__main__":
 
     for filename in os.listdir(dataset_folder):
         if filename.endswith(".txt"):
-            read_files_and_process(filename)
+            read_files_and_process(os.path.join(dataset_folder, filename))
             # readJson(os.path.join(dataset_folder, filename))

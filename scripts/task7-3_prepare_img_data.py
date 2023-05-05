@@ -25,7 +25,7 @@ with open('./csv_files/copy_wikiEntities.csv', 'r') as file:
         text = ''
         for element in content_div.descendants:
             if element.name == 'img':
-                text += "$IMG$"
+                text += " $IMG$ "
             else:
                 if hasattr(element, 'get_text'):
                     text += element.get_text()
@@ -38,6 +38,8 @@ with open('./csv_files/copy_wikiEntities.csv', 'r') as file:
 
         with open(output_filename, 'w') as file:
             json_text = json.dumps(text.strip(), ensure_ascii=False)
-            file.write(json_text.replace('"', '\\'))
+            json_text = json_text.replace('\\n', ' ')
+            json_text = json_text.replace('\n', ' ')
+            file.write(json_text)
 
         print(entity_name + ' done')
