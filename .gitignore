@@ -1,7 +1,8 @@
-venv
 .vscode
-parsed_wiki_pages
-.DS_Store
-csv_files
-pages
+*.DS_Store
 *.json
+venv
+parsed_wiki_pages
+csv_files
+individual_files
+pages
