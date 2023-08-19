@@ -63,7 +63,7 @@ def annotate_part(part):
         prev_sentence = sentences[i - 1]
         words = prev_sentence.split()
 
-        if "$IMG$" in sentence and i > 0:
+        if any("$IMG$" in word for word in sentence.split()) and i > 0:
             # Annotate the words of the sentence JUST BEFORE $IMG$
             ner_labels = [B_IMG_LABEL] + [I_IMG_LABEL] * (len(words) - 1)
         else:
