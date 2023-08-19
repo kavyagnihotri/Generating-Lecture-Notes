@@ -94,10 +94,10 @@ def write_to_jsonl(output_file, annotated_array):
 
 
 def main():
-    input_file = './csv_files/wikiEntities_mini.csv'
-    train_file = './csv_files/train.csv'                # 50,000 jsonlines
-    validation_file = './csv_files/validation.csv'      # 12,000 jsonlines
-    test_file = './csv_files/test.csv'                  # 3,000 jsonlines
+    input_file = './csv_files/wikiEntities.csv'
+    train_file = './json_files/train.json'                # 50,000 jsonlines
+    validation_file = './json_files/validation.json'      # 12,000 jsonlines
+    test_file = './json_files/test.json'                  # 3,000 jsonlines
 
     example_count = 0
 
@@ -127,8 +127,4 @@ def main():
             print(example_count)
 
 if __name__ == '__main__':
-    
-
     main()
-
-
