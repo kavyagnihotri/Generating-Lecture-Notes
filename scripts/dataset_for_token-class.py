@@ -97,7 +97,7 @@ def write_to_jsonl(output_file, annotated_array):
     # assert len(words_array) == len(ner_labels_array), "words_array and ner_labels_array must have the same length"
     if len(words_array) != len(ner_labels_array):
         print("Warning: word_array and ner_labels_array must have the same length. Skipping this entry.")
-        # continue
+        return
     
     with open(output_file, 'a') as file:
         entry = { "tokens": words_array, "tags": ner_labels_array }
