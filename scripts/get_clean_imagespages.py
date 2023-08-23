@@ -11,9 +11,9 @@ O_LABEL = "O"
 IMG_TAG = "$IMG$"
 
 # Example Counts
-TRAIN_EXAMPLE_COUNT = 50000
-VALIDATION_EXAMPLE_COUNT = 12000
-TEST_EXAMPLE_COUNT = 3000
+TRAIN_EXAMPLE_COUNT = 25000
+VALIDATION_EXAMPLE_COUNT = 6000
+TEST_EXAMPLE_COUNT = 1500
 
 def text_from_url(url):
     """
@@ -91,6 +91,7 @@ def annotate_part(part):
         curr_words = sentence.split()
         # prev_words = words_from_sentence(prev_sentence)
         # curr_words = words_from_sentence(sentence)
+        ner_labels = []
 
         if i > 0:
             if any(IMG_TAG in word for word in curr_words):
