@@ -5,8 +5,8 @@ import re
 import json
 
 # Token labels
-B_LABEL = "B-LOC"
-I_LABEL = "I-LOC"
+B_LABEL = "B-IMG"
+I_LABEL = "I-IMG"
 O_LABEL = "O"
 ELEMENT_TAG = "$IMG$"
 
@@ -107,9 +107,9 @@ def write_to_jsonl(output_file, annotated_array):
 
 def main():
     input_file = './csv_files/wikiEntities.csv'
-    train_file = './json_files/train-1.json'                # 25,000 jsonlines
-    validation_file = './json_files/validation-1.json'      # 6,000 jsonlines
-    test_file = './json_files/test-1.json'                  # 1,500 jsonlines
+    train_file = './json_files/train.json'                # 25,000 jsonlines
+    validation_file = './json_files/validation.json'      # 6,000 jsonlines
+    test_file = './json_files/test.json'                  # 1,500 jsonlines
 
     example_count = 0
 
