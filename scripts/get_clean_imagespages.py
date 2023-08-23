@@ -5,8 +5,8 @@ import re
 import json
 
 # Token labels
-B_IMG_LABEL = "B-IMG"
-I_IMG_LABEL = "I-IMG"
+B_IMG_LABEL = "B-LOC"
+I_IMG_LABEL = "I-LOC"
 O_LABEL = "O"
 IMG_TAG = "$IMG$"
 
@@ -41,9 +41,10 @@ def clean_text(text):
     """
         Clean the text by removing all the special characters(except '.', '?', '!') and extra whitespaces
     """
-    pattern = r'[^a-zA-Z0-9\s.!?$IMG$]'                     # pattern to keep only alphanumeric characters and ending punctuations
+    # pattern = r'[^a-zA-Z0-9\s.!?$IMG$]'                     # pattern to keep only alphanumeric characters and ending punctuations
+    pattern = r'[^a-zA-Z0-9\s.!?{}]'.format(re.escape(IMG_TAG))   # pattern to keep only alphanumeric characters and ending punctuations
     cleaned_text = re.sub(pattern, '', text)
-    cleaned_text = ' '.join(cleaned_text.strip().split())   # remove extra whitespaces
+    cleaned_text = ' '.join(cleaned_text.strip().split())         # remove extra whitespaces
     return cleaned_text
 
 
