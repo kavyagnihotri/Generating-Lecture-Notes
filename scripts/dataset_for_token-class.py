@@ -5,10 +5,10 @@ import re
 import json
 
 # Token labels
-B_IMG_LABEL = "B-LOC"
-I_IMG_LABEL = "I-LOC"
+B_LABEL = "B-LOC"
+I_LABEL = "I-LOC"
 O_LABEL = "O"
-IMG_TAG = "$IMG$"
+ELEMENT_TAG = "$IMG$"
 
 # Example Counts
 TRAIN_EXAMPLE_COUNT = 25000
@@ -18,7 +18,7 @@ TEST_EXAMPLE_COUNT = 1500
 def text_from_url(url):
     """
         Extract the text from the url
-        Additions: Replace all the images with IMG_TAG token i.e. " $IMG$ "
+        Additions: Replace all the images with ELEMENT_TAG token
     """
     response = requests.get(url)
     content = response.content
@@ -30,7 +30,7 @@ def text_from_url(url):
     text = ''
     for element in content_div.descendants:
         if element.name == 'img':
-            text += " " + IMG_TAG + " "
+            text += " " + ELEMENT_TAG + " "
         else:
             if hasattr(element, 'get_text'):
                 text += element.get_text(separator=' ')
@@ -41,10 +41,10 @@ def clean_text(text):
     """
         Clean the text by removing all the special characters(except '.', '?', '!') and extra whitespaces
     """
-    # pattern = r'[^a-zA-Z0-9\s.!?$IMG$]'                     # pattern to keep only alphanumeric characters and ending punctuations
-    pattern = r'[^a-zA-Z0-9\s.!?{}]'.format(re.escape(IMG_TAG))   # pattern to keep only alphanumeric characters and ending punctuations
+    # pattern = r'[^a-zA-Z0-9\s.!?$IMG$]'                               # pattern to keep only alphanumeric characters and ending punctuations
+    pattern = r'[^a-zA-Z0-9\s.!?{}]'.format(re.escape(ELEMENT_TAG))     # pattern to keep only alphanumeric characters and ending punctuations
     cleaned_text = re.sub(pattern, '', text)
-    cleaned_text = ' '.join(cleaned_text.strip().split())         # remove extra whitespaces
+    cleaned_text = ' '.join(cleaned_text.strip().split())                # remove extra whitespaces
     return cleaned_text
 
 
@@ -54,27 +54,9 @@ def split_and_filter_text(text, word_limit=700):
     """
     words = text.split()
     substrings = [words[i:i + word_limit] for i in range(0, len(words), word_limit)]
-    filtered_substrings = [sub for sub in substrings if any(IMG_TAG in word for word in sub)]
+    filtered_substrings = [sub for sub in substrings if any(ELEMENT_TAG in word for word in sub)]
     return [' '.join(sub) for sub in filtered_substrings]
 
-
-# def words_from_sentence(sentence):
-#     """
-#         Split the text into words. 
-#         Additions: Split words like "Category$IMG$" into separate tokens of "Category" and "$IMG$"
-#     """
-#     words = sentence.split()
-
-#     new_words = []
-#     for word in words:
-#         if word != IMG_TAG and IMG_TAG in word:
-#             parts = word.split(IMG_TAG)
-#             parts.append(IMG_TAG)
-#             new_words.extend(part for part in parts if part != '')
-#         else:
-#             new_words.append(word)
-#     return new_words
-    
 
 def annotate_part(part):
     """
@@ -87,35 +69,24 @@ def annotate_part(part):
     # Split by sentence-ending punctuations
     sentences = re.split(r'\s*[.!?]\s*', part)  
     for i, sentence in enumerate(sentences):
-        prev_sentence = sentences[i - 1]
-        prev_words = prev_sentence.split()
+        prev_words = sentences[i - 1].split()
         curr_words = sentence.split()
-        # prev_words = words_from_sentence(prev_sentence)
-        # curr_words = words_from_sentence(sentence)
         ner_labels = []
 
-        if i > 0:
-            if any(IMG_TAG in word for word in curr_words):
-                # Annotate the words of the sentence JUST BEFORE $IMG$
-                ner_labels = [B_IMG_LABEL] + [I_IMG_LABEL] * (len(prev_words) - 1)
-            elif len(sentences) > 1 and i != len(sentences) - 1:
-                ner_labels = [O_LABEL] * len(prev_words)
+        if any(word == ELEMENT_TAG for word in curr_words) and i > 0:
+            # Annotate the words of the previous sentence JUST BEFORE $IMG$
+            ner_labels = [B_LABEL] + [I_LABEL] * (len(prev_words) - 1)
+        else:
+            ner_labels = [O_LABEL] * len(prev_words)
         
         words_array += prev_words
         ner_labels_array += ner_labels
 
         # There are more than one sentences and this is the last sentence
-        if i == len(sentences) - 1:
+        if len(sentences) > 1 and i == len(sentences) - 1:
             words_array += curr_words
-            ner_labels_array += [B_IMG_LABEL if word == IMG_TAG else O_LABEL for word in curr_words]
+            ner_labels_array += [B_LABEL if word == ELEMENT_TAG else O_LABEL for word in curr_words]
     return words_array, ner_labels_array
-
-
-# def is_invalid(ner_labels_array):
-#     """
-#         Returns true if there is no B-IMG label in the ner_labels_array
-#     """
-#     return B_IMG_LABEL not in ner_labels_array
 
 
 def write_to_jsonl(output_file, annotated_array):
@@ -136,9 +107,9 @@ def write_to_jsonl(output_file, annotated_array):
 
 def main():
     input_file = './csv_files/wikiEntities.csv'
-    train_file = './json_files/train.json'                # 50,000 jsonlines
-    validation_file = './json_files/validation.json'      # 12,000 jsonlines
-    test_file = './json_files/test.json'                  # 3,000 jsonlines
+    train_file = './json_files/train-1.json'                # 25,000 jsonlines
+    validation_file = './json_files/validation-1.json'      # 6,000 jsonlines
+    test_file = './json_files/test-1.json'                  # 1,500 jsonlines
 
     example_count = 0
 
