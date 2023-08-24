@@ -16,9 +16,10 @@ def check_jsonline_sizes(file_path):
 
 if __name__ == "__main__":
     base_dir = "/Users/kavyagnihotri/Documents/personal/acads/4-1/generating-lecture-notes/prajna-project/json_files/"
-    files = ["train-1.json", "train.json"]
+    files = ["train.json", "test.json", "validation.json"]
 
     for file in files:
         print(f"Checking {file}")
         full_path = os.path.join(base_dir, file)
         check_jsonline_sizes(full_path)
+        print("Done")
