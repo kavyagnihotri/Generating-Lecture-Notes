@@ -1,0 +1,137 @@
+08/25/2023 14:15:19 - WARNING - __main__ - Process rank: 0, device: cuda:0, n_gpu: 1distributed training: False, 16-bits training: False
+08/25/2023 14:15:19 - INFO - __main__ - Training/evaluation parameters TrainingArguments(
+_n_gpu=1,
+adafactor=False,
+adam_beta1=0.9,
+adam_beta2=0.999,
+adam_epsilon=1e-08,
+auto_find_batch_size=False,
+bf16=False,
+bf16_full_eval=False,
+data_seed=None,
+dataloader_drop_last=False,
+dataloader_num_workers=0,
+dataloader_pin_memory=True,
+ddp_backend=None,
+ddp_broadcast_buffers=None,
+ddp_bucket_cap_mb=None,
+ddp_find_unused_parameters=None,
+ddp_timeout=1800,
+debug=[],
+deepspeed=None,
+disable_tqdm=False,
+dispatch_batches=None,
+do_eval=True,
+do_predict=True,
+do_train=True,
+eval_accumulation_steps=None,
+eval_delay=0,
+eval_steps=None,
+evaluation_strategy=no,
+fp16=False,
+fp16_backend=auto,
+fp16_full_eval=False,
+fp16_opt_level=O1,
+fsdp=[],
+fsdp_config={'min_num_params': 0, 'xla': False, 'xla_fsdp_grad_ckpt': False},
+fsdp_min_num_params=0,
+fsdp_transformer_layer_cls_to_wrap=None,
+full_determinism=False,
+gradient_accumulation_steps=1,
+gradient_checkpointing=False,
+greater_is_better=None,
+group_by_length=False,
+half_precision_backend=auto,
+hub_always_push=False,
+hub_model_id=None,
+hub_private_repo=False,
+hub_strategy=every_save,
+hub_token=<HUB_TOKEN>,
+ignore_data_skip=False,
+include_inputs_for_metrics=False,
+jit_mode_eval=False,
+label_names=None,
+label_smoothing_factor=0.0,
+learning_rate=5e-05,
+length_column_name=length,
+load_best_model_at_end=False,
+local_rank=0,
+log_level=passive,
+log_level_replica=warning,
+log_on_each_node=True,
+logging_dir=/scratch/prajna/khooshrin/transformersModel/token-classification/../models/image-location/runs/Aug25_14-15-17_gpunode4.hpc.bits-hyderabad.ac.in,
+logging_first_step=False,
+logging_nan_inf_filter=True,
+logging_steps=500,
+logging_strategy=steps,
+lr_scheduler_type=linear,
+max_grad_norm=1.0,
+max_steps=-1,
+metric_for_best_model=None,
+mp_parameters=,
+no_cuda=False,
+num_train_epochs=3.0,
+optim=adamw_torch,
+optim_args=None,
+output_dir=/scratch/prajna/khooshrin/transformersModel/token-classification/../models/image-location,
+overwrite_output_dir=False,
+past_index=-1,
+per_device_eval_batch_size=8,
+per_device_train_batch_size=8,
+prediction_loss_only=False,
+push_to_hub=False,
+push_to_hub_model_id=None,
+push_to_hub_organization=None,
+push_to_hub_token=<PUSH_TO_HUB_TOKEN>,
+ray_scope=last,
+remove_unused_columns=True,
+report_to=['tensorboard'],
+resume_from_checkpoint=None,
+run_name=/scratch/prajna/khooshrin/transformersModel/token-classification/../models/image-location,
+save_on_each_node=False,
+save_safetensors=False,
+save_steps=500,
+save_strategy=steps,
+save_total_limit=None,
+seed=42,
+sharded_ddp=[],
+skip_memory_metrics=True,
+tf32=None,
+torch_compile=False,
+torch_compile_backend=None,
+torch_compile_mode=None,
+torchdynamo=None,
+tpu_metrics_debug=False,
+tpu_num_cores=None,
+use_cpu=False,
+use_ipex=False,
+use_legacy_prediction_loop=False,
+use_mps_device=False,
+warmup_ratio=0.0,
+warmup_steps=0,
+weight_decay=0.0,
+)
+08/25/2023 14:15:24 - INFO - datasets.builder - Using custom data configuration default-25906e2301193056
+08/25/2023 14:15:24 - INFO - datasets.info - Loading Dataset Infos from /home/prajna/.local/lib/python3.8/site-packages/datasets/packaged_modules/json
+08/25/2023 14:15:24 - INFO - datasets.builder - Generating dataset json (/home/prajna/.cache/huggingface/datasets/json/default-25906e2301193056/0.0.0/8bb11242116d547c741b2e8a1f18598ffdd40a1d4f2a2872c7a28b697434bc96)
+08/25/2023 14:15:24 - INFO - datasets.builder - Downloading and preparing dataset json/default to /home/prajna/.cache/huggingface/datasets/json/default-25906e2301193056/0.0.0/8bb11242116d547c741b2e8a1f18598ffdd40a1d4f2a2872c7a28b697434bc96...
+08/25/2023 14:15:24 - INFO - datasets.download.download_manager - Downloading took 0.0 min
+08/25/2023 14:15:24 - INFO - datasets.download.download_manager - Checksum Computation took 0.0 min
+08/25/2023 14:15:24 - INFO - datasets.builder - Generating train split
+08/25/2023 14:15:25 - INFO - datasets.builder - Generating validation split
+08/25/2023 14:15:25 - INFO - datasets.builder - Generating test split
+08/25/2023 14:15:26 - INFO - datasets.utils.info_utils - Unable to verify splits sizes.
+08/25/2023 14:15:26 - INFO - datasets.builder - Dataset json downloaded and prepared to /home/prajna/.cache/huggingface/datasets/json/default-25906e2301193056/0.0.0/8bb11242116d547c741b2e8a1f18598ffdd40a1d4f2a2872c7a28b697434bc96. Subsequent calls will reuse this data.
+08/25/2023 14:15:38 - INFO - datasets.arrow_dataset - Caching processed dataset at /home/prajna/.cache/huggingface/datasets/json/default-25906e2301193056/0.0.0/8bb11242116d547c741b2e8a1f18598ffdd40a1d4f2a2872c7a28b697434bc96/cache-16294e75c565fedc.arrow
+08/25/2023 14:15:48 - INFO - datasets.arrow_dataset - Caching processed dataset at /home/prajna/.cache/huggingface/datasets/json/default-25906e2301193056/0.0.0/8bb11242116d547c741b2e8a1f18598ffdd40a1d4f2a2872c7a28b697434bc96/cache-172e978bd1d9a488.arrow
+08/25/2023 14:16:27 - INFO - datasets.arrow_dataset - Caching processed dataset at /home/prajna/.cache/huggingface/datasets/json/default-25906e2301193056/0.0.0/8bb11242116d547c741b2e8a1f18598ffdd40a1d4f2a2872c7a28b697434bc96/cache-3869a1c772339fee.arrow
+{'loss': 0.1329, 'learning_rate': 5.197132616487455e-06, 'epoch': 2.69}
+{'train_runtime': 121.4964, 'train_samples_per_second': 36.618, 'train_steps_per_second': 4.593, 'train_loss': 0.12813116059935648, 'epoch': 3.0}
+***** train metrics *****
+  epoch                    =        3.0
+  train_loss               =     0.1281
+  train_runtime            = 0:02:01.49
+  train_samples            =       1483
+  train_samples_per_second =     36.618
+  train_steps_per_second   =      4.593
+08/25/2023 14:18:44 - INFO - __main__ - *** Evaluate ***
