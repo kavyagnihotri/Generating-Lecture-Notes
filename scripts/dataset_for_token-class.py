@@ -4,14 +4,20 @@ import csv
 import re
 import json
 
+ELEMENT_NAME = "pre"
+ELEMENT_TYPE = "pseudo-code"
+WORD_LIMIT = 700
+SKIP_ONLY_O_LABEL = True
+SKIP_EXAMPLE_COUNT = 0
+
 # Token labels
-B_LABEL = "B-IMG"
-I_LABEL = "I-IMG"
+B_LABEL = "B-PRE"
+I_LABEL = "I-PRE"
 O_LABEL = "O"
-ELEMENT_TAG = "$IMG$"
+ELEMENT_TAG = "$PRE$"
 
 # Example Counts
-TRAIN_EXAMPLE_COUNT = 25000
+TRAIN_EXAMPLE_COUNT = 25000 - SKIP_EXAMPLE_COUNT
 VALIDATION_EXAMPLE_COUNT = 6000
 TEST_EXAMPLE_COUNT = 1500
 
@@ -29,7 +35,7 @@ def text_from_url(url):
     # Extract the text inside the content div
     text = ''
     for element in content_div.descendants:
-        if element.name == 'img':
+        if element.name == ELEMENT_NAME:
             text += " " + ELEMENT_TAG + " "
         else:
             if hasattr(element, 'get_text'):
@@ -48,7 +54,7 @@ def clean_text(text):
     return cleaned_text
 
 
-def split_and_filter_text(text, word_limit=700):
+def split_and_filter_text(text, word_limit=WORD_LIMIT):
     """
     Split the text into smaller parts of word_limit words
     """
@@ -74,7 +80,7 @@ def annotate_part(part):
         ner_labels = []
 
         if any(word == ELEMENT_TAG for word in curr_words) and i > 0:
-            # Annotate the words of the previous sentence JUST BEFORE $IMG$
+            # Annotate the words of the previous sentence JUST BEFORE the element tag
             ner_labels = [B_LABEL] + [I_LABEL] * (len(prev_words) - 1)
         else:
             ner_labels = [O_LABEL] * len(prev_words)
@@ -89,7 +95,7 @@ def annotate_part(part):
     return words_array, ner_labels_array
 
 
-def write_to_jsonl(output_file, annotated_array):
+def write_to_jsonl(output_file, annotated_array, example_count):
     """
     Append word_array and tag_array as JSON objects to a JSONLines file
     """
@@ -97,19 +103,25 @@ def write_to_jsonl(output_file, annotated_array):
     # assert len(words_array) == len(ner_labels_array), "words_array and ner_labels_array must have the same length"
     if len(words_array) != len(ner_labels_array):
         print("Warning: word_array and ner_labels_array must have the same length. Skipping this entry.")
-        return
+        return example_count
+    
+    if SKIP_ONLY_O_LABEL and all(label == O_LABEL for label in ner_labels_array):
+        print("All labels are 'O'. Skipping this entry.")
+        return example_count
     
     with open(output_file, 'a') as file:
         entry = { "tokens": words_array, "tags": ner_labels_array }
         json.dump(entry, file)
         file.write('\n')
+        example_count += 1
+    return example_count
 
 
 def main():
     input_file = './csv_files/wikiEntities.csv'
-    train_file = './json_files/train.json'                # 25,000 jsonlines
-    validation_file = './json_files/validation.json'      # 6,000 jsonlines
-    test_file = './json_files/test.json'                  # 1,500 jsonlines
+    train_file = './data/' + ELEMENT_TYPE + '-location/train.json'                 # 25,000 jsonlines
+    validation_file = './data/ ' + ELEMENT_TYPE + '-location/validation.json'      # 6,000 jsonlines
+    test_file = './data/' + ELEMENT_TYPE + '-location/test.json'                   # 1,500 jsonlines
 
     example_count = 0
 
@@ -130,13 +142,14 @@ def main():
             elif example_count < TRAIN_EXAMPLE_COUNT + VALIDATION_EXAMPLE_COUNT + TEST_EXAMPLE_COUNT:
                 output_filename = test_file
             else:
+                print("Done")
                 break
 
             for annotated_array in annotated_arrays:
-                write_to_jsonl(output_filename, annotated_array)
-                example_count += 1
-            
-            print(example_count)
+                temp = write_to_jsonl(output_filename, annotated_array, example_count)
+                if temp != example_count:
+                    example_count = temp
+                print(temp, url)
             
 
 if __name__ == '__main__':
