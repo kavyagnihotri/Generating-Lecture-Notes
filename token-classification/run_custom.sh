@@ -14,15 +14,9 @@
 
 # Define the base directory
 BASE_DIR="$(pwd)"
-
-  # --test_file "${BASE_DIR}/../data/image-location/test.json" \
-  
-  
-
-
 python3 run_ner.py \
   --model_name_or_path bert-base-uncased \
-  --train_file "${BASE_DIR}/../data/image-location/test.json" \
+  --train_file "${BASE_DIR}/../data/image-location/train.json" \
   --validation_file "${BASE_DIR}/../data/image-location/validation.json" \
   --test_file "${BASE_DIR}/../data/image-location/test.json" \
   --output_dir "${BASE_DIR}/../models/image-location" \
