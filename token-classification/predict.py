@@ -1,38 +1,74 @@
-from transformers import AutoModelForTokenClassification, AutoTokenizer
 import torch
 import os
 import sys
+from transformers import AutoTokenizer, AutoModelForTokenClassification
 
-def load_model(finetuned_model):
-    # Load the fine-tuned model and tokenizer
-    current_script_path = os.path.abspath(__file__)
-    parent_dir = os.path.dirname(os.path.dirname(current_script_path))
-    model_name = parent_dir + '/models/' + finetuned_model
-    model = AutoModelForTokenClassification.from_pretrained(model_name)
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+MAX_SEQUENECE_LENGTH = 512                  # Adjusted as per the model's maximum token limit
 
-    return model, tokenizer
+def model_path(element):
+    """
+        Returns the path to the model directory. 
+        Assumes the model is as follows "../models/{element}-location"
+    """
+    curr_dir = os.path.dirname(os.path.realpath(__file__))
+    parent_dir = os.path.dirname(curr_dir)
+    model_dir = os.path.join(parent_dir, 'models', element + '-location')
+    return model_dir
 
-def predict(model, tokenizer, input_text):
-    inputs = tokenizer(input_text, return_tensors="pt")
-    outputs = model(**inputs)
-    predicted_labels = torch.argmax(outputs.logits, dim=2)
-    predicted_tags = [tokenizer.convert_ids_to_tokens(tag_id) for tag_id in predicted_labels[0]]
-    return predicted_tags
+
+def load_model(model_dir):
+    """
+        Loads the finetuned model and tokenizer from the given directory.
+    """
+    tokenizer = AutoTokenizer.from_pretrained(model_dir)
+    model = AutoModelForTokenClassification.from_pretrained(model_dir)
+    return tokenizer, model
+
+
+def predict_location(text, tokenizer, model):
+    """
+        Predicts the location of the given text.
+    """
+    # Subtract 2 for [CLS] and [SEP] tokens  
+    # [SEP] is a separator token 
+    # [CLS] is a token that will be used to predict whether or not Part B is a sentence that directly follows Part A.
+    for i in range(0, len(text), MAX_SEQUENECE_LENGTH - 2):  
+        chunk = text[i:i + MAX_SEQUENECE_LENGTH - 2]
+        input_ids = tokenizer.encode(chunk, add_special_tokens=True, truncation=True, padding=True)
+        
+        with torch.no_grad():
+            outputs = model(torch.tensor(input_ids).unsqueeze(0))
+        predictions = outputs.logits.argmax(dim=-1)[0]
+        
+        # Map label class indexes to string labels.
+        tokens = tokenizer.convert_ids_to_tokens(input_ids)
+        for token, pred in zip(tokens, predictions):
+            print(token, ': ', model.config.id2label[pred.item()])
+
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python predict.py finetuned_model_name")
-        print("Hint: finetuned_model_name is either 'image-location', 'pseudo-code-location' or 'formula-location'")
+        print("Usage: python predict.py element_name")
+        print("Hint: element_name is either 'image', 'pseudo-code' or 'formula'")
         sys.exit(1)
     
-    finetuned_model = sys.argv[1]
-    model, tokenizer = load_model(finetuned_model)
+    element = sys.argv[1]
+    tokenizer, model = load_model(model_path(element))
+    text = input("Enter text: ").strip()
+    predict_location(text, tokenizer, model)
 
-    print("Put your input text here: ")
-    input_text = input().strip()
-    predicted_tags = predict(model, tokenizer, input_text)
-    print(predicted_tags)
 
-if __name__ == "__main__":
-    main()  
+if __name__ == '__main__':
+    main()
+
+# max_seq_length = 512  # Adjust this based on your model's maximum token limit
+# tokenized_texts = []
+# for i in range(0, len(text), max_seq_length - 2):             # Subtract 2 for [CLS] and [SEP] tokens
+#     chunk = text[i:i + max_seq_length - 2]
+#     input_ids = torch.tensor(tokenizer.encode(chunk)).unsqueeze(0)
+#     with torch.no_grad():
+#         outputs = model(input_ids)
+#     predictions = outputs[0].argmax(axis=-1)[0][1:-1]         # Rid of [CLS] and [SEP] tokens (first and last)
+
+#     for token, pred in zip(tokenizer.tokenize(text), predictions):
+#         print(token, ': ', model.config.id2label[pred.numpy().item()])
