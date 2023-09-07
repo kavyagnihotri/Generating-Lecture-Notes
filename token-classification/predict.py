@@ -32,7 +32,7 @@ def predict_location(text, tokenizer, model, output_file):
     # Subtract 2 for [CLS] and [SEP] tokens  
     # [SEP] is a separator token 
     # [CLS] is a token that will be used to predict whether or not Part B is a sentence that directly follows Part A.
-    with open(output_file + '.txt', 'w') as f:
+    with open(output_file, 'w') as f:
         for i in range(0, len(text), MAX_SEQUENECE_LENGTH - 2):  
             chunk = text[i:i + MAX_SEQUENECE_LENGTH - 2]
             input_ids = tokenizer.encode(chunk, add_special_tokens=True, truncation=True, padding=True)
@@ -59,7 +59,7 @@ def main():
     input_file = sys.argv[2]
     output_file = sys.argv[3]
 
-    with open(input_file + '.txt', 'r') as f:
+    with open(input_file, 'r') as f:
         text = f.read()
 
     model_dir = model_path(element)
