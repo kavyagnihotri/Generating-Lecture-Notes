@@ -11,3 +11,6 @@ data
 models
 job_outputs
 old
+models-old-labelling
+*.txt
+*.csv
